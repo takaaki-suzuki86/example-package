@@ -1,0 +1,13 @@
+{
+    "name": "takaaki-suzuki86/example-package",
+    "description": "An example package for demonstration purposes",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Example\\Package\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.4"
+    }
+}
