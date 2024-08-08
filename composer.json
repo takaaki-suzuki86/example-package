@@ -1,6 +1,7 @@
 {
     "name": "takaaki-suzuki86/example-package",
     "description": "An example package for demonstration purposes",
+    "version": "0.0.1",
     "type": "library",
     "autoload": {
         "psr-4": {
