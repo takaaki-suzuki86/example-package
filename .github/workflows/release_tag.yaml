@@ -1,0 +1,42 @@
+name: Create Release Tag
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create_tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Get version from composer.json
+        id: get_version
+        run: |
+          VERSION=$(jq -r '.version' composer.json)
+          echo "::set-output name=VERSION::$VERSION"
+
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists"
+            exit 0
+          fi
+          echo "Tag v$VERSION does not exist"
+
+      - name: Create and push tag
+        if: steps.check_tag.outputs.TAG_EXISTS != 'true'
+        run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
