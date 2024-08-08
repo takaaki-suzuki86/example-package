@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Git
         run: |
@@ -26,16 +26,20 @@ jobs:
 
       - name: Check if tag exists
         id: check_tag
-        run: |
-          VERSION=${{ steps.get_version.outputs.VERSION }}
-          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
-            echo "Tag v$VERSION already exists"
-            exit 0
-          fi
-          echo "Tag v$VERSION does not exist"
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = `v${{ steps.get_version.outputs.VERSION }}`;
+            const { data: tags } = await github.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            const tagExists = tags.find(t => t.name === tag);
+            return tagExists ? 'true' : 'false';
+          result-encoding: string
 
       - name: Create and push tag
-        if: steps.check_tag.outputs.TAG_EXISTS != 'true'
+        if: steps.check_tag.outputs.result == 'false'
         run: |
           VERSION=${{ steps.get_version.outputs.VERSION }}
           git tag "v$VERSION"
