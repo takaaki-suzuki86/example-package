@@ -30,7 +30,7 @@ jobs:
         with:
           script: |
             const tag = `v${{ steps.get_version.outputs.VERSION }}`;
-            const { data: tags } = await github.repos.listTags({
+            const { data: tags } = await github.rest.repos.listTags({
               owner: context.repo.owner,
               repo: context.repo.repo
             });
