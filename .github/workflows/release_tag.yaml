@@ -40,7 +40,9 @@ jobs:
 
       - name: Create and push tag
         if: steps.check_tag.outputs.result == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=${{ steps.get_version.outputs.VERSION }}
           git tag "v$VERSION"
-          git push origin "v$VERSION"
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git "v$VERSION"
